@@ -11,10 +11,10 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DashBoardViewHandler {
+public class DashboardViewHandler {
 
     @Autowired
-    private DashBoardRepository dashBoardRepository;
+    private DashboardRepository dashboardRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
     public void whenFileUploaded_then_CREATE_1(
@@ -24,15 +24,16 @@ public class DashBoardViewHandler {
             if (!fileUploaded.validate()) return;
 
             // view 객체 생성
-            DashBoard dashBoard = new DashBoard();
+            Dashboard dashboard = new Dashboard();
             // view 객체에 이벤트의 Value 를 set 함
-            dashBoard.setId(Long.valueOf(fileUploaded.getName()));
-            dashBoard.setSize(fileUploaded.getSize());
-            dashBoard.setPath(fileUploaded.getPath());
-            dashBoard.setType(fileUploaded.getType());
-            dashBoard.setIsuploaded(true);
+            dashboard.setId(fileUploaded.getId());
+            dashboard.setName(fileUploaded.getName());
+            dashboard.setSize(fileUploaded.getSize());
+            dashboard.setPath(fileUploaded.getPath());
+            dashboard.setType(fileUploaded.getType());
+            dashboard.setIsUploaded(true);
             // view 레파지 토리에 save
-            dashBoardRepository.save(dashBoard);
+            dashboardRepository.save(dashboard);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,16 +46,16 @@ public class DashBoardViewHandler {
         try {
             if (!fileIndexed.validate()) return;
             // view 객체 조회
-            Optional<DashBoard> dashBoardOptional = dashBoardRepository.findById(
-                fileIndexed.getFileid()
+            Optional<Dashboard> dashboardOptional = dashboardRepository.findById(
+                fileIndexed.getFileId()
             );
 
-            if (dashBoardOptional.isPresent()) {
-                DashBoard dashBoard = dashBoardOptional.get();
+            if (dashboardOptional.isPresent()) {
+                Dashboard dashboard = dashboardOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                dashBoard.setIsindexed(true);
+                dashboard.setIsIndexed(true);
                 // view 레파지 토리에 save
-                dashBoardRepository.save(dashBoard);
+                dashboardRepository.save(dashboard);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,16 +69,16 @@ public class DashBoardViewHandler {
         try {
             if (!videoProcessed.validate()) return;
             // view 객체 조회
-            Optional<DashBoard> dashBoardOptional = dashBoardRepository.findById(
-                videoProcessed.getFileid()
+            Optional<Dashboard> dashboardOptional = dashboardRepository.findById(
+                videoProcessed.getFileId()
             );
 
-            if (dashBoardOptional.isPresent()) {
-                DashBoard dashBoard = dashBoardOptional.get();
+            if (dashboardOptional.isPresent()) {
+                Dashboard dashboard = dashboardOptional.get();
                 // view 객체에 이벤트의 eventDirectValue 를 set 함
-                dashBoard.setUrl(videoProcessed.getUrl());
+                dashboard.setUrl(videoProcessed.getUrl());
                 // view 레파지 토리에 save
-                dashBoardRepository.save(dashBoard);
+                dashboardRepository.save(dashboard);
             }
         } catch (Exception e) {
             e.printStackTrace();
